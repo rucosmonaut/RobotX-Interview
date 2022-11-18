@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RobotX_Interview.Dictionary;
 using RobotX_Interview.Entities;
 
 namespace RobotX_Interview.Data
@@ -12,7 +10,7 @@ namespace RobotX_Interview.Data
 
         public ApplicationContext()
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -28,8 +26,7 @@ namespace RobotX_Interview.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Client>().HasData(
-                new {
-                     Id = 1,
+                new { Id = 1,
                      CardCode = 6999002655657, 
                      StartDate = DateTime.Now,
                      FinishDate = DateTime.Now, 
@@ -45,8 +42,7 @@ namespace RobotX_Interview.Data
                      Street = "Московский пр-кт",
                      House = "40",
                      Apartment = "2"
-                }
-                );
+                });
         }
     }
 }

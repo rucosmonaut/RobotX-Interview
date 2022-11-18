@@ -1,4 +1,3 @@
-using RobotX_Interview.Dictionary;
 using System.ComponentModel.DataAnnotations;
 
 namespace RobotX_Interview.Entities
@@ -10,9 +9,9 @@ namespace RobotX_Interview.Entities
 
         public long CardCode { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
-        public DateTime FinishDate { get; set; }
+        public DateTime? FinishDate { get; set; }
 
         public string? LastName { get; set; }
 
@@ -22,7 +21,7 @@ namespace RobotX_Interview.Entities
 
         public string? Gender { get; set; } = default!;
 
-        public DateTime BirthDay { get; set; }
+        public DateTime? BirthDay { get; set; }
 
         public string? PhoneHome { get; set; } = default!;
                      

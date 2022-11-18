@@ -6,9 +6,10 @@
 @using RobotX_Interview.Entities
 @inject ClientService ClientService
 @inject ISnackbar Snackbar
+@inject NavigationManager uriHelper;
 
 <MudTable Items="@clients" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info" CommitEditTooltip="Commit Edit"
-          OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditCommit="ItemHasBeenCommitted" CanCancelEdit="true" OnCancelEditClick="CancelEdit">
+          OnCommitEditClick="@(() => Snackbar.Add("Save Data"))" RowEditCommit="ItemHasBeenCommitted">
     <HeaderContent>
         <MudTh>CardCode</MudTh>
         <MudTh>StartDate</MudTh>
@@ -28,13 +29,13 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="CardCode">@context.CardCode</MudTd>
-        <MudTd DataLabel="StartDate">@context.StartDate.ToString("MM/dd/yyyy")</MudTd>
-        <MudTd DataLabel="FinishDate">@context.FinishDate.ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="StartDate">@context.StartDate?.ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="FinishDate">@context.FinishDate?.ToString("MM/dd/yyyy")</MudTd>
         <MudTd DataLabel="LastName">@context.LastName</MudTd>
         <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
         <MudTd DataLabel="SurName">@context.SurName</MudTd>
         <MudTd DataLabel="Gender">@context.Gender</MudTd>
-        <MudTd DataLabel="BirthDay">@context.BirthDay.ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="BirthDay">@context.BirthDay?.ToString("MM/dd/yyyy")</MudTd>
         <MudTd DataLabel="PhoneHome">@context.PhoneHome</MudTd>
         <MudTd DataLabel="PhoneMobil">@context.PhoneMobil</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
@@ -43,10 +44,10 @@
         <MudTd DataLabel="House">@context.House</MudTd>
         <MudTd DataLabel="Apartment">@context.Apartment</MudTd>
     </RowTemplate>
-        <RowEditingTemplate>
+    <RowEditingTemplate>
         <MudTd DataLabel="CardCode">@context.CardCode</MudTd>
         <MudTd DataLabel="StartDate">
-            <MudDatePicker Label="StartDate" @bind-Value="@context.StartDate" Required/>
+            <MudDatePicker Label="StartDate" @bind-Value="@context.StartDate"  Required/>
         </MudTd>
         <MudTd DataLabel="FinishDate">
             <MudDatePicker Label="FinishDate" @bind-Value="@context.FinishDate" Required/>
@@ -107,10 +108,11 @@
         loading = false;
     }
 
-    private void CancelEdit(object element)
+    private void OnChangeStartDate(long id, DateTime? date)
     {
-        clients = ClientService.GetClients().ToList();
-        StateHasChanged();
+        Client? client = clients.FirstOrDefault(_ => _.CardCode == id);
+        if(client != null)
+            client.StartDate = date;
     }
 
     private void ItemHasBeenCommitted(object element)

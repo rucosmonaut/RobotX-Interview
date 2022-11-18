@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 using RobotX_Interview.Entities;
+using System.Diagnostics;
 using System.Xml;
 
 namespace RobotX_Interview.Data
@@ -13,7 +14,7 @@ namespace RobotX_Interview.Data
             DataBase = dataBase;
         }
 
-        public Client? GetClient(int cardCode)
+        public Client? GetClient(long cardCode)
         {
             return DataBase.Clients.FirstOrDefault(c => c.CardCode == cardCode);
         }
@@ -60,14 +61,16 @@ namespace RobotX_Interview.Data
         {
             try
             {
-                /// TODO: Change Folder to Procces Folder
-                string path = $"/temp/client_{Guid.NewGuid()}.xml";
+                var process = Process.GetCurrentProcess();
+                string fullPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string path = Path.Combine(fullPath, $"client_{Guid.NewGuid()}.xml");
+
                 await using FileStream fs = new(path, FileMode.Create);
                 await file.OpenReadStream().CopyToAsync(fs);
                 fs.Close();
 
-                XmlDocument xDoc = new XmlDocument();
-                xDoc.Load(fs.Name);
+                XmlDocument xDoc = new ();
+                xDoc.Load(path);
                 XmlElement? xRoot = xDoc.DocumentElement;
 
                 if (xRoot != null)
@@ -79,15 +82,15 @@ namespace RobotX_Interview.Data
                         {
                             CardCode = Convert.ToInt64(xnode.Attributes.GetNamedItem("CARDCODE")?.Value),
                             StartDate = xnode.Attributes.GetNamedItem("STARTDATE")?.Value == ""
-                                ? DateTime.MinValue : Convert.ToDateTime(xnode.Attributes.GetNamedItem("STARTDATE")?.Value),
-                            FinishDate = xnode.Attributes.GetNamedItem("FinishDate")?.Value == ""
-                                ? DateTime.MinValue : Convert.ToDateTime(xnode.Attributes.GetNamedItem("FinishDate")?.Value),
+                                ? null : Convert.ToDateTime(xnode.Attributes.GetNamedItem("STARTDATE")?.Value),
+                            FinishDate = xnode.Attributes.GetNamedItem("FINISHDATE")?.Value == ""
+                                ? null : Convert.ToDateTime(xnode.Attributes.GetNamedItem("FINISHDATE")?.Value),
                             LastName = xnode.Attributes.GetNamedItem("LASTNAME")?.Value,
                             FirstName = xnode.Attributes.GetNamedItem("FIRSTNAME")?.Value,
                             SurName = xnode.Attributes.GetNamedItem("SURNAME")?.Value,
                             Gender = xnode.Attributes.GetNamedItem("GENDER")?.Value,
                             BirthDay = xnode.Attributes.GetNamedItem("BIRTHDAY")?.Value == ""
-                                ? DateTime.MinValue : Convert.ToDateTime(xnode.Attributes.GetNamedItem("BIRTHDAY")?.Value),
+                                ? null : Convert.ToDateTime(xnode.Attributes.GetNamedItem("BIRTHDAY")?.Value),
                             PhoneHome = xnode.Attributes.GetNamedItem("PHONEHOME")?.Value ?? "",
                             PhoneMobil = xnode.Attributes.GetNamedItem("PHONEMOBIL")?.Value ?? "",
                             Email = xnode.Attributes.GetNamedItem("EMAIL")?.Value ?? "",
@@ -99,6 +102,8 @@ namespace RobotX_Interview.Data
 
                         CreateClient(client);
                     }
+                    File.Delete(path);
+
                     return true;
                 }
                 else

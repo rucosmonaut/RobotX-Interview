@@ -1,5 +1,6 @@
 ﻿@using RobotX_Interview.Data
 @inherits LayoutComponentBase
+@inject NavigationManager uriHelper;
 @inject ClientService ClientService
 
 <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
@@ -34,5 +35,6 @@
     private async Task UploadFile(IBrowserFile file)
     {
         bool result = await ClientService.CreateClientsFromXML(file);
+        uriHelper.NavigateTo(uriHelper.Uri, forceLoad: true);
     }
 }
