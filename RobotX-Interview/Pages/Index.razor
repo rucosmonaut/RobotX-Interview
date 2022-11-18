@@ -1,9 +1,121 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Weather forecast</PageTitle>
 
-<h1>Hello, world!</h1>
+@using RobotX_Interview.Data
+@using RobotX_Interview.Entities
+@inject ClientService ClientService
+@inject ISnackbar Snackbar
 
-Welcome to your new app.
+<MudTable Items="@clients" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info" CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditCommit="ItemHasBeenCommitted" CanCancelEdit="true" OnCancelEditClick="CancelEdit">
+    <HeaderContent>
+        <MudTh>CardCode</MudTh>
+        <MudTh>StartDate</MudTh>
+        <MudTh>FinishDate</MudTh>
+        <MudTh>LastName</MudTh>
+        <MudTh>FirstName</MudTh>
+        <MudTh>SurName</MudTh>
+        <MudTh>Gender</MudTh>
+        <MudTh>BirthDay</MudTh>
+        <MudTh>PhoneHome</MudTh>
+        <MudTh>PhoneMobil</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>City</MudTh>
+        <MudTh>Street</MudTh>
+        <MudTh>House</MudTh>
+        <MudTh>Apartment</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="CardCode">@context.CardCode</MudTd>
+        <MudTd DataLabel="StartDate">@context.StartDate.ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="FinishDate">@context.FinishDate.ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="LastName">@context.LastName</MudTd>
+        <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
+        <MudTd DataLabel="SurName">@context.SurName</MudTd>
+        <MudTd DataLabel="Gender">@context.Gender</MudTd>
+        <MudTd DataLabel="BirthDay">@context.BirthDay.ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="PhoneHome">@context.PhoneHome</MudTd>
+        <MudTd DataLabel="PhoneMobil">@context.PhoneMobil</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="City">@context.City</MudTd>
+        <MudTd DataLabel="Street">@context.Street</MudTd>
+        <MudTd DataLabel="House">@context.House</MudTd>
+        <MudTd DataLabel="Apartment">@context.Apartment</MudTd>
+    </RowTemplate>
+        <RowEditingTemplate>
+        <MudTd DataLabel="CardCode">@context.CardCode</MudTd>
+        <MudTd DataLabel="StartDate">
+            <MudDatePicker Label="StartDate" @bind-Value="@context.StartDate" Required/>
+        </MudTd>
+        <MudTd DataLabel="FinishDate">
+            <MudDatePicker Label="FinishDate" @bind-Value="@context.FinishDate" Required/>
+        </MudTd>
+        <MudTd DataLabel="LastName">
+            <MudTextField @bind-Value="@context.LastName" Required />
+        </MudTd>
+        <MudTd DataLabel="FirstName">
+            <MudTextField @bind-Value="@context.FirstName" Required />
+        </MudTd>
+        <MudTd DataLabel="SurName">
+            <MudTextField @bind-Value="@context.SurName" Required />
+        </MudTd>
+        <MudTd DataLabel="Gender">
+            <MudSelect @bind-Value="@context.Gender" Label="Gender" HelperText="String" Placeholder="Please Select" AdornmentIcon="@Icons.Material.Filled.People" AdornmentColor="Color.Primary" Required>
+                <MudSelectItem Value="@("M")">Male</MudSelectItem>
+                <MudSelectItem Value="@("F")">Female</MudSelectItem>
+            </MudSelect>
+        </MudTd>
+        <MudTd DataLabel="BirthDay">
+            <MudDatePicker Label="BirthDay" @bind-Value="@context.BirthDay" Required/>
+        </MudTd>
+        <MudTd DataLabel="PhoneHome">
+            <MudTextField @bind-Value="@context.PhoneHome" Required />
+        </MudTd>
+        <MudTd DataLabel="PhoneMobil">
+            <MudTextField @bind-Value="@context.PhoneMobil" Required />
+        </MudTd>
+        <MudTd DataLabel="Email">
+            <MudTextField @bind-Value="@context.Email" Required/>
+        </MudTd>
+        <MudTd DataLabel="City">
+            <MudTextField @bind-Value="@context.City" Required />
+        </MudTd>
+        <MudTd DataLabel="Street">
+            <MudTextField @bind-Value="@context.Street" Required />
+        </MudTd>
+        <MudTd DataLabel="House">
+            <MudTextField @bind-Value="@context.House" Required />
+        </MudTd>
+        <MudTd DataLabel="Apartment">
+            <MudTextField @bind-Value="@context.Apartment" Required/>
+        </MudTd>
+    </RowEditingTemplate>
+    <EditButtonContent Context="button">
+        <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+    </EditButtonContent>
+</MudTable>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    private bool loading = true;
+    private List<Client> clients = new ();
+
+    protected override void OnInitialized()
+    {
+        clients = ClientService.GetClients().ToList();
+        loading = false;
+    }
+
+    private void CancelEdit(object element)
+    {
+        clients = ClientService.GetClients().ToList();
+        StateHasChanged();
+    }
+
+    private void ItemHasBeenCommitted(object element)
+    {
+        Client client = (Client)element;
+        ClientService.EditClient(client);
+    }
+}

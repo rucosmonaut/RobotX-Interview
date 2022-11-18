@@ -1,19 +1,38 @@
-﻿@inherits LayoutComponentBase
+﻿@using RobotX_Interview.Data
+@inherits LayoutComponentBase
+@inject ClientService ClientService
 
-<PageTitle>RobotX-Interview</PageTitle>
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudLayout>
+    <MudAppBar>
+        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Light/Dark Mode"/>
+        <MudSpacer />
+        <MudFileUpload T="IBrowserFile" Accept=".xml" FilesChanged="UploadFile">
+            <ButtonTemplate>
+                <MudButton HtmlTag="label"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Filled.UploadFile"
+                           for="@context">
+                    Only .xml files
+                </MudButton>
+            </ButtonTemplate>
+        </MudFileUpload>
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+@code{
+    private MudTheme _theme = new();
+    private bool _isDarkMode = true;
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    private async Task UploadFile(IBrowserFile file)
+    {
+        bool result = await ClientService.CreateClientsFromXML(file);
+    }
+}

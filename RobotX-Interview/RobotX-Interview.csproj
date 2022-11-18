@@ -7,4 +7,18 @@
     <RootNamespace>RobotX_Interview</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MudBlazor" Version="6.1.2" />
+    <PackageReference Include="MudBlazor.ThemeManager" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="temp\" />
+  </ItemGroup>
+
 </Project>
