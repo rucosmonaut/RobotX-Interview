@@ -47,10 +47,10 @@
     <RowEditingTemplate>
         <MudTd DataLabel="CardCode">@context.CardCode</MudTd>
         <MudTd DataLabel="StartDate">
-            <MudDatePicker Label="StartDate" @bind-Value="@context.StartDate"  Required/>
+            <MudDatePicker Label="StartDate" Date="@context.StartDate" DateChanged="@((date) => {OnChangeStartDate(@context.CardCode, date);})"   Required/>
         </MudTd>
         <MudTd DataLabel="FinishDate">
-            <MudDatePicker Label="FinishDate" @bind-Value="@context.FinishDate" Required/>
+            <MudDatePicker Label="FinishDate" Date="@context.FinishDate" DateChanged="@((date) => {OnChangeFinishDate(@context.CardCode, date);})" Required/>
         </MudTd>
         <MudTd DataLabel="LastName">
             <MudTextField @bind-Value="@context.LastName" Required />
@@ -68,7 +68,7 @@
             </MudSelect>
         </MudTd>
         <MudTd DataLabel="BirthDay">
-            <MudDatePicker Label="BirthDay" @bind-Value="@context.BirthDay" Required/>
+            <MudDatePicker Label="BirthDay" Date="@context.BirthDay" DateChanged="@((date) => {OnChangeBirthDayDate(@context.CardCode, date);})" Required/>
         </MudTd>
         <MudTd DataLabel="PhoneHome">
             <MudTextField @bind-Value="@context.PhoneHome" Required />
@@ -111,13 +111,28 @@
     private void OnChangeStartDate(long id, DateTime? date)
     {
         Client? client = clients.FirstOrDefault(_ => _.CardCode == id);
-        if(client != null)
-            client.StartDate = date;
+        if(client != null) client.StartDate = date;
+        StateHasChanged();
+    }
+
+    private void OnChangeFinishDate(long id, DateTime? date)
+    {
+        Client? client = clients.FirstOrDefault(_ => _.CardCode == id);
+        if(client != null) client.FinishDate = date;
+        StateHasChanged();
+    }
+
+    private void OnChangeBirthDayDate(long id, DateTime? date)
+    {
+        Client? client = clients.FirstOrDefault(_ => _.CardCode == id);
+        if(client != null) client.BirthDay = date;
+        StateHasChanged();
     }
 
     private void ItemHasBeenCommitted(object element)
     {
         Client client = (Client)element;
         ClientService.EditClient(client);
+        uriHelper.NavigateTo(uriHelper.Uri, forceLoad: true);
     }
 }
